@@ -31,7 +31,7 @@
 
 #define MAX_PLAYERS (4)
 #define DEFAULT_FPS (50)
-#define DEFAULT_WINNING_SCORE (15)
+#define DEFAULT_WINNING_SCORE (99999)
 
 #define DEFAULT_BALL_AMPLIFY 5
 
@@ -69,7 +69,7 @@
 #define BIG_ENVIRONMENT_HEIGHT (400)
 
 
-enum { PLAYER_NONE, PLAYER_HUMAN, PLAYER_COMPUTER};
+enum { PLAYER_NONE, PLAYER_HUMAN, PLAYER_COMPUTER, PLAYER_RL};
 enum { MONITOR_NORMAL, MONITOR_OLD, MONITOR_VERYOLD, MONITOR_VERYVERYOLD};
 
 typedef struct PlayerFrameConf_s {
@@ -150,7 +150,7 @@ public:
     fps = DEFAULT_FPS;
     mill_per_frame = 1000 / fps;
     left_players[0] = PLAYER_HUMAN;
-    right_players[0] = PLAYER_COMPUTER;
+    right_players[0] = PLAYER_RL;
     for ( int i = 1; i < MAX_PLAYERS/2; i++ ) {
       left_players[i] = PLAYER_NONE;
       right_players[i] = PLAYER_NONE;

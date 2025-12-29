@@ -2,8 +2,7 @@
 /*
   GAV - Gpl Arcade Volleyball
   
-  Copyright (C) 2002
-  GAV team (http://sourceforge.net/projects/gav/)
+  *TODO*
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,32 +19,43 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __MENUITEMFRAMESKIP_H__
-#define __MENUITEMFRAMESKIP_H__
+#ifndef __PLAYERAI_RL_H__
+#define __PLAYERAI_RL_H__
 
-#include <SDL.h>
-#include "MenuItem.h"
-#include "globals.h"
+#include "Player.h"
+#include "ControlsArray.h"
 
-class MenuItemFrameSkip: public MenuItem {
+class Ball;
+
+class PlayerAI_RL : public Player 
+{
+    Ball * _b;
+
+private:
+    void connect_to_rl_service();
+    int sock;
+    int action_sequence_num;
+    bool match_ended;
+
+
+protected:
+    int _highestpoint;
+
 public:
-  MenuItemFrameSkip() {
-    setLabel();
-  }
-  
-  void setLabel() {
-    char fs[10];
-    snprintf(fs,10, "%d", configuration.frame_skip);
 
-    label = std::string("Frameskip: ") + std::string(fs);
-  }
-
-  int execute(std::stack<Menu *> &s) {
-    configuration.frame_skip =
-      (configuration.frame_skip + 1)%10;
-    setLabel();
-    return(0);
-  }
+    PlayerAI_RL(Team *team, std::string name, 
+	     pl_type_t type, int idx, int speed,
+	     Ball *b) {
+        init(team, name, type, idx, speed);
+        _b = b;
+        _highestpoint = 0;
+        sock = -1;
+    }
+    virtual ~PlayerAI_RL();
+    
+    virtual pl_ctrl_t getCtrl() { return PL_CTRL_AI; }
+    virtual triple_t planAction();
+    
 };
 
 #endif

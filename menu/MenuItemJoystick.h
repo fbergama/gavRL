@@ -42,7 +42,7 @@ class MenuItemJoystick: public MenuItem {
   void setLabel() {
     label = "Player ";
 
-    sprintf(nstr, "%d", _plId/2 + 1);
+    snprintf(nstr, 10, "%d", _plId/2 + 1);
     label += std::string(nstr);
     if ( _plId % 2 )
       label += " right: ";
@@ -52,7 +52,7 @@ class MenuItemJoystick: public MenuItem {
     if ( _joyId == -1 )
       label += "Not Present";
     else {
-      sprintf(nstr, "%d", _joyId);
+      snprintf(nstr, 10, "%d", _joyId);
       label += "Joystick " + std::string(nstr);
     }
   }

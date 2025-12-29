@@ -66,7 +66,7 @@ int StateClient::setupConnection(InputState *is) {
       SDL_Flip(screen);
     }
     char msg[100];
-    sprintf(msg, "Please type port number [%d]", SERVER_PORT);
+    snprintf(msg, 100, "Please type port number [%d]", SERVER_PORT);
     cga->printRow(screen, 2, msg);
     SDL_Flip(screen);
     while ( (ch = getKeyPressed(is)) != SDLK_RETURN ) {
@@ -157,13 +157,13 @@ int StateClient::execute(InputState *is, unsigned int ticks,
     b = new Ball(BALL_ORIG);
 
     for ( int j = 0; j < _lp; j++ ) {
-      string name = "Pippo-" + j;
+      string name = std::string("Pippo-") + std::to_string(j);
       Player * pl = tl->addPlayerHuman(name.c_str(), PL_TYPE_MALE_LEFT);
       pl->setState(PL_STATE_STILL, true);
     }
 
     for ( int j = 0; j < _rp; j++ ) {
-      string name = "Pluto-" + j;
+      string name = std::string("Pluto-") + std::to_string(j);
       Player * pl = tr->addPlayerHuman(name.c_str(), PL_TYPE_MALE_RIGHT);
       pl->setState(PL_STATE_STILL, true);
     }

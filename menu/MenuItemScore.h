@@ -39,8 +39,7 @@ public:
   }
 
   int execute(std::stack<Menu *> &s) {
-    configuration.winning_score =
-      (configuration.winning_score%50)+5;
+    configuration.winning_score = configuration.winning_score+5;
     setLabel();
     return(0);
   }

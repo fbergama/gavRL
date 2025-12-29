@@ -52,7 +52,7 @@ public:
     if ( !isStillPressed )
       isPressed = false;
 
-    sprintf(numb, "Player %d ", 2*_base + ((state <= PL1J)?1:2));
+    snprintf(numb,20, "Player %d ", 2*_base + ((state <= PL1J)?1:2));
     std::string st(numb);
 
     switch ( state ) {

@@ -35,7 +35,7 @@ public:
   
   void setLabel() {
     char fs[10];
-    sprintf(fs, "%d", configuration.fps);
+    snprintf(fs,10, "%d", configuration.fps);
 
     label = std::string("Frames per second: ") + std::string(fs);
   }

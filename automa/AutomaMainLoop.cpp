@@ -31,6 +31,13 @@
 #include "StateClient.h"
 #endif
 
+
+
+//#define GO_FAST
+
+
+
+
 AutomaMainLoop::AutomaMainLoop()
 {
   _is = new InputState();
@@ -70,6 +77,8 @@ int AutomaMainLoop::transition(int retval)
   return retval; // _curr;
 }
 
+
+
 int AutomaMainLoop::start()
 {
   unsigned int prevTicks = 0;
@@ -78,15 +87,37 @@ int AutomaMainLoop::start()
   unsigned int milliseconds;
   
   while ( 1 ) {
+
+#ifdef GO_FAST
+    int ticks = prevTicks + configuration.mill_per_frame;
+#else
     int ticks = SDL_GetTicks();
-    
+#endif
+
+    unsigned int elapsed = (ticks - prevTicks);
+
     if ( prevTicks == 0 ) {
       prevTicks = ticks;
       continue;
     }
+
+
+    if ( elapsed < configuration.mill_per_frame )
+    {
+          //std::cout << "delay" << std::endl;
+          SDL_Delay( configuration.mill_per_frame - elapsed );
+    }
     
+    
+    // comment to go fast
+#ifndef GO_FAST
+    ticks = SDL_GetTicks();
+#endif
+
+    //std::cout << "ticks: " << ticks << " elapsed: " << elapsed << std::endl;
+
     frames++;
-    milliseconds += ticks - prevTicks;
+    milliseconds += elapsed;
     if ( milliseconds >= 1000 )
       frames = milliseconds = 0;
     
@@ -103,8 +134,6 @@ int AutomaMainLoop::start()
     _prev = _curr;
     _curr = transition(retval);
 
-    if ( (ticks - prevTicks) < configuration.mill_per_frame )
-      SDL_Delay(configuration.mill_per_frame - (ticks - prevTicks));
     
     prevTicks = ticks;
   }

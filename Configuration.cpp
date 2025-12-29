@@ -56,19 +56,32 @@ int Configuration::loadConfiguration() {
     else
       cerr << "Unrecognized monitor type \"" << value << "\"\n";
   }
+
   if ( aargh.getArg("frame_skip", value) )
     configuration.frame_skip = atoi(value.c_str());
+
   if ( aargh.getArg("fps", value) )
     configuration.setFps(atoi(value.c_str()));
 
-  for ( int i = 0; i < left_nplayers; i++ )
-    if ( aargh.getArg(("left_player" + toString(i)), value) )
-      if ( value ==  "human")
-	configuration.left_players[i] = PLAYER_HUMAN;
-      else if ( value == "computer")
-	configuration.left_players[i] = PLAYER_COMPUTER;
-      else
-	cerr << "Unrecognized player type \"" << value << "\"\n";
+    for ( int i = 0; i < left_nplayers; i++ )
+    {
+        if ( aargh.getArg(("left_player" + toString(i)), value) )
+        {
+            if ( value ==  "human")
+            {
+                configuration.left_players[i] = PLAYER_HUMAN;
+
+            } else if ( value == "computer")
+            {
+                configuration.left_players[i] = PLAYER_COMPUTER;
+            } else if ( value == "rl")
+            {
+                configuration.left_players[i] = PLAYER_RL;
+            }else {
+                cerr << "Unrecognized player type \"" << value << "\"\n";
+            }
+        }
+    }
   
   for ( int i = 0; i < MAX_PLAYERS/2; i++ ) {
     string arg1, arg2, arg3;
@@ -90,13 +103,21 @@ int Configuration::loadConfiguration() {
   }
 
   for ( int i = 0; i < right_nplayers; i++ )
-    if ( aargh.getArg(("right_player" + toString(i)), value) )
-      if ( value == "human" )
-	configuration.right_players[i] = PLAYER_HUMAN;
-      else if ( value == "computer")
-	configuration.right_players[i] = PLAYER_COMPUTER;
-      else
-	cerr << "Unrecognized player type \"" << value << "\"\n";
+        if ( aargh.getArg(("right_player" + toString(i)), value) )
+        {
+            if ( value == "human" )
+            {
+                configuration.right_players[i] = PLAYER_HUMAN;
+            } else if ( value == "computer")
+            {
+                configuration.right_players[i] = PLAYER_COMPUTER;
+            }  else if ( value == "rl")
+            {
+                configuration.right_players[i] = PLAYER_RL;
+            }else {
+                cerr << "Unrecognized player type \"" << value << "\"\n";
+            }
+        }
   
   for ( int i = 0; i < MAX_PLAYERS/2; i++ ) {
     string arg1, arg2, arg3;
@@ -116,19 +137,33 @@ int Configuration::loadConfiguration() {
       controlsArray->setControls(i*2 + 1, ctrls);
     }
   }
+
   if ( aargh.getArg("big_background", value) )
     configuration.bgBig = (value=="yes");
+
   if ( aargh.getArg("fullscreen", value) )
     configuration.fullscreen = (value=="yes");
+
   if ( aargh.getArg("ball_speed", value) )
-    if ( value == "normal" )
-      configuration.ballAmplify = DEFAULT_BALL_AMPLIFY;
-    else if ( value == "fast" )
-      configuration.ballAmplify = DEFAULT_BALL_AMPLIFY + BALL_SPEED_INC;
-    else if ( value == "very_fast" )
-      configuration.ballAmplify = DEFAULT_BALL_AMPLIFY + 2*BALL_SPEED_INC;
-    else
-      cerr << "Unrecognized ball speed \"" << value << "\"\n";
+    {
+        if ( value == "normal" )
+        {
+            configuration.ballAmplify = DEFAULT_BALL_AMPLIFY;
+        }
+        else if ( value == "fast" )
+        {
+            configuration.ballAmplify = DEFAULT_BALL_AMPLIFY + BALL_SPEED_INC;
+        }
+        else if ( value == "very_fast" )
+        {
+            configuration.ballAmplify = DEFAULT_BALL_AMPLIFY + 2*BALL_SPEED_INC;
+        }
+        else
+        {
+            cerr << "Unrecognized ball speed \"" << value << "\"\n";
+        }
+    }
+
   if ( aargh.getArg("theme", value) )
     configuration.currentTheme = value;
 
@@ -143,7 +178,7 @@ int Configuration::loadConfiguration() {
 
 /* we'll use aargh's dump feature! Yiipeee!! */
 int Configuration::saveConfiguration(string fname) {
-  // cerr << "saving to: " << fname << endl;
+  cerr << "saving to: " << fname << endl;
 
   string tosave;
   
@@ -188,6 +223,8 @@ int Configuration::createConfigurationFile() {
       aargh.setArg("left_player" + toString(i), "human"); break;
     case PLAYER_COMPUTER:
       aargh.setArg("left_player" + toString(i), "computer"); break;
+    case PLAYER_RL:
+      aargh.setArg("left_player" + toString(i), "rl"); break;
     } 
   }
   for ( int i = 0; i < right_nplayers; i++ ) {
@@ -196,6 +233,8 @@ int Configuration::createConfigurationFile() {
       aargh.setArg("right_player" + toString(i), "human"); break;
     case PLAYER_COMPUTER:
       aargh.setArg("right_player" + toString(i), "computer"); break;
+    case PLAYER_RL:
+      aargh.setArg("right_player" + toString(i), "rl"); break;
     }
   }
   aargh.setArg("big_background", c.bgBig?"yes":"no");

@@ -51,9 +51,9 @@ class Ball {
   FrameSeq * _frames;
   int _speed;
   float _angle;
-  int _spdx, _spdy;
-  int _x, _y;
-  int _oldx, _oldy;
+  float _spdx, _spdy;
+  float _x, _y;
+  float _oldx, _oldy;
   int _frameIdx;
   int _radius;
   int _beginning;
@@ -119,14 +119,15 @@ class Ball {
 
   inline int speed() { return _speed; }
   inline void speed(int v) { _speed = v; }
-  inline int x() { return _x; }
-  inline int y() { return _y; }
+  inline float x() { return _x; }
+  inline float y() { return _y; }
   inline int radius() { return _radius; }
   inline float angle() { return _angle; }
   inline void angle(float v) { _angle = v; }
+  inline const int scorerSide() { return _scorerSide; }
 
-  inline int spdx() { return _spdx; }
-  inline int spdy() { return _spdy; }
+  inline float spdx() { return _spdx; }
+  inline float spdy() { return _spdy; }
   inline int frame() { return _frameIdx; }
   inline void setX(int x) { _x = x; }
   inline void setY(int y) { _y = y; }
@@ -134,6 +135,8 @@ class Ball {
   void updateFrame(int passed);
   void update(int passed, Team *tleft, Team *tright);
   float distance(int, int);
+
+  inline bool colliding_with( const Player* p ) { return _inCollisionWith == p; }
 
   
   void draw(SDL_Surface *scr = screen);

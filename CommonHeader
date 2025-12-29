@@ -19,21 +19,22 @@
 CWD        = $(shell pwd)
 GAV_ROOT    = $(CWD:%/$(RELPATH)=%)
 #comment the following line if you do not want network support
-NET = true
+#NET = true
 
 LD = ld
 CXX = g++
 
-CXXFLAGS= `sdl-config --cflags` -g -Wall -DAUDIO
+CXXFLAGS= `sdl-config --cflags` -I/Users/fibe/05_programming/libs/SDL_net/dist/include/SDL -I/Users/fibe/programs/SDL_image/dist/include/SDL -g -Wall -DAUDIO
+
 
 ifndef NET
 CXXFLAGS+= -DNONET
 endif
 
 ifdef NET
-LDFLAGS= `sdl-config --libs` -lSDL_image -lSDL_net -lm
+LDFLAGS= `sdl-config --libs` -L/Users/fibe/05_programming/libs/SDL_image/dist/lib -L/Users/fibe/05_programming/libs/SDL_net/dist/lib -lSDL_image -lSDL_net -lm
 else
-LDFLAGS= `sdl-config --libs` -lSDL_image -lm
+LDFLAGS= `sdl-config --libs` -Wl -rpath /Users/fibe/programs/SDL_image/dist/lib -L/Users/fibe/programs/SDL_image/dist/lib -lSDL_image -lm
 endif
 
 SRCS	= 	$(wildcard *.cpp)

@@ -25,7 +25,7 @@
 #define PI 3.14158
 
 #define GRAVITY 250
-#define MAX_TOUCHES 3
+#define MAX_TOUCHES 30
 
 #define MIN(a,b)        ((a<b)?a:b)
 #define MAX(a,b)        ((a>b)?a:b)
@@ -63,13 +63,13 @@ bool Ball::collide(Player *p) {
 void Ball::update_internal(Player * pl) {
   int cplx = pl->x() + pl->width() / 2;
   int cply = pl->y() + pl->height() / 2;
-  int cbx = _x + _frames->width() / 2;
-  int cby = _y + _frames->height() / 2;
+  float cbx = _x + _frames->width() / 2;
+  float cby = _y + _frames->height() / 2;
 
-  int dx = (cplx - cbx);
-  int dy = (cply - cby);
+  float dx = (cplx - cbx);
+  float dy = (cply - cby);
 
-  float beta = dx?atan((float) dy/ (float) dx):(PI/2);
+  float beta = dx ? atan( dy / dx) : (PI/2);
 
   float sinb = sin(-beta);
   float cosb = cos(-beta);
@@ -85,10 +85,10 @@ void Ball::update_internal(Player * pl) {
   y1 = _spdx * sinb + (- _spdy) * cosb;
   x1 = configuration.ballAmplify * (pl->speedX() * cosb - pl->speedY() * sinb);
   
-  int oldspdy = _spdy;
+  float oldspdy = _spdy;
 
-  _spdx = (int) (x1 * cos(beta) - y1 * sin(beta));
-  _spdy = (int) (- (x1 * sin(beta) + y1 * cos(beta)));
+  _spdx = (x1 * cos(beta) - y1 * sin(beta));
+  _spdy = (- (x1 * sin(beta) + y1 * cos(beta)));
 
   if ( (pl->speedX() - _spdx) * dx < 0)
     _spdx = pl->speedX();
@@ -100,7 +100,7 @@ void Ball::update_internal(Player * pl) {
 #define MIN_POS_SPD 100
 
   if ( (_spdy < MIN_POS_SPD) && (cby < cply) )
-    _spdy = (int) ((1.1 * ELASTIC_SMOOTH) * abs(oldspdy));
+    _spdy = ((1.1 * ELASTIC_SMOOTH) * abs(oldspdy));
 
 }
 
@@ -117,7 +117,7 @@ void Ball::assignPoint(int side, Team *t) {
   }
   _side = side;
   _x = (configuration.NET_X) +
-    side * (configuration.SCREEN_WIDTH/4) - _radius;
+       -1/*side*/ * (configuration.SCREEN_WIDTH/4) - _radius;
   //((configuration.SCREEN_WIDTH * _side) / 4);
   _y = ((configuration.SCREEN_HEIGHT * 2) / 3) - _radius ;
   _spdx = _spdy = _accelY = 0;
@@ -141,8 +141,8 @@ void Ball::resetPos(int x, int y) {
 
 void Ball::draw(SDL_Surface *scr) {
   SDL_Rect rect;
-  rect.x = _x;
-  rect.y = _y;
+  rect.x = (int)_x;
+  rect.y = (int)_y;
 
   _frames->blit(_frameIdx, scr, &rect);
 }
@@ -150,8 +150,8 @@ void Ball::draw(SDL_Surface *scr) {
 float
 Ball::distance(int x, int y)
 {
-  int bx = _x + _frames->width()/2; // center of the ball
-  int by = _y + _frames->height()/2;
+  float bx = _x + _frames->width()/2; // center of the ball
+  float by = _y + _frames->height()/2;
   return(sqrt((double) (x - bx)*(x - bx) + (y - by) * (y - by))); 
 }
 
@@ -217,7 +217,7 @@ void Ball::updateFrame(int passed) {
 // updates the ball position, knowing 'passed' milliseconds went
 // away
 void Ball::update(int passed, Team *tleft, Team *tright) {
-  int dx, dy;
+  float dx, dy;
 
   updateFrame(passed);
 
@@ -235,8 +235,8 @@ void Ball::update(int passed, Team *tleft, Team *tright) {
   if ( !netPartialCollision(_x, _y) ) // if it's not network supported
     update_direction(passed);
 
-  dx = (int) (_spdx * ((float) passed / 1000.0));
-  dy = (int) (_spdy * ((float) passed / 1000.0));
+  dx = _spdx * ((float) passed) / 1000.0;
+  dy = _spdy * ((float) passed) / 1000.0;
 
   _x += dx;
   _y -= dy; // usual problem with y
@@ -244,7 +244,7 @@ void Ball::update(int passed, Team *tleft, Team *tright) {
   //ball hits upper wall
   if ( _y < configuration.CEILING ) {
     _y = configuration.CEILING;
-    _spdy = - (int) (_spdy * ELASTIC_SMOOTH);
+    _spdy = -(_spdy * ELASTIC_SMOOTH);
 #ifdef AUDIO
     soundMgr->playSound(SND_BOUNCE);
 #endif // AUDIO
@@ -253,7 +253,7 @@ void Ball::update(int passed, Team *tleft, Team *tright) {
   //ball hits left wall
   if ( _x < configuration.LEFT_WALL  ) {
     _x = configuration.LEFT_WALL;
-    _spdx = - (int) (_spdx * ELASTIC_SMOOTH);
+    _spdx = -(_spdx * ELASTIC_SMOOTH);
     if ( _collisionCount[tright] )
       resetCollisionCount();
 #ifdef AUDIO
@@ -292,11 +292,11 @@ void Ball::update(int passed, Team *tleft, Team *tright) {
 	     (_x + 7*_frames->width()/8 > configuration.NET_X) )
 	  _spdx = - _spdx;
       }
-      _spdx = (int) (_spdx * ELASTIC_SMOOTH * ELASTIC_SMOOTH * ELASTIC_SMOOTH);
+      _spdx = (_spdx * ELASTIC_SMOOTH * ELASTIC_SMOOTH * ELASTIC_SMOOTH);
     }
     _y -= _frames->height()/4; //(int) (_frames->height() -
     //(4*distance(configuration.NET_X, configuration.NET_Y) / _frames->height()));
-    _spdy = (int) fabs(_spdy * ELASTIC_SMOOTH * ELASTIC_SMOOTH);
+    _spdy = fabs(_spdy * ELASTIC_SMOOTH * ELASTIC_SMOOTH);
 
     // ball stuck on the net "feature" ;-)
     if (_x == _oldx) {
@@ -314,7 +314,7 @@ void Ball::update(int passed, Team *tleft, Team *tright) {
   //ball hits floor
   if ( _y > (configuration.FLOOR_ORD - _frames->height() ) ) {
     _y = (configuration.FLOOR_ORD - _frames->height() );
-    _spdy = - (int) (_spdy * ELASTIC_SMOOTH);
+    _spdy = -(_spdy * ELASTIC_SMOOTH);
     if ( !_scorerSide ) {
       // oldx, so we're safe from collisions against
       // the net

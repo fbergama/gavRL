@@ -28,6 +28,7 @@
 #include "Player.h"
 #include "PlayerHuman.h"
 #include "PlayerAI.h"
+#include "PlayerAI_RL.h"
 #include "PlayerRemote.h"
 #include "ControlsArray.h"
 #include "ScreenFont.h"
@@ -44,6 +45,8 @@ class Team {
   int _xmax;
   int _ymin;
   int _ymax;
+  int _screen_w;
+  int _screen_h;
   int _score;
   int _side;
   int _nplayers;
@@ -72,7 +75,8 @@ class Team {
     // _xmax = _xmin + (configuration.SCREEN_WIDTH / 2) - 16;
     _xmax = _xmin + ((304*configuration.SCREEN_WIDTH)/640);
     _ymin = 0;
-    _ymax = 0;
+    _screen_w = configuration.SCREEN_WIDTH;
+    _screen_h = configuration.SCREEN_HEIGHT;
   }
 
   inline void score() {
@@ -114,12 +118,23 @@ class Team {
     return p;
  }
 
+  inline Player * addPlayerAI_RL(std::string name, 
+			      pl_type_t type, Ball * b,
+			      int speed = configuration.DEFAULT_SPEED) {
+    Player *p = new PlayerAI_RL(this, name, type, 
+			     _nplayers * 2 + _playerNumInc, speed, b);
+    addPlayer(p);
+    return p;
+ }
+
   inline std::vector<Player *> players() {
     return(_players);
   }
 
   inline int xmax() { return _xmax; }
   inline int xmin() { return _xmin; }
+  inline int screen_w() { return _screen_w; }
+  inline int screen_h() { return _screen_h; }
   inline int ymax() { return _ymax; }
   inline int ymin() { return _ymin; }
   inline int side() { return _side; }
@@ -138,7 +153,7 @@ class Team {
 	  it != _players.end(); it++ )
       (*it)->draw(scr);
     char s[100];
-    sprintf(s, "%d", _score);
+    snprintf(s, 100, "%d", _score);
     cga->printXY(scr, &r, s);
   }
 

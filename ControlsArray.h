@@ -26,6 +26,7 @@
 #include <string.h>
 #include "InputState.h"
 #include "globals.h"
+#include <iostream>
 
 class Team;
 
@@ -55,6 +56,7 @@ public:
     for ( int i = 0; i < MAX_PLAYERS; i++ )
       _joyMapping[i] = NULL;
     _nJoys = SDL_NumJoysticks();
+    std::cout << _nJoys << " joysticks found." << std::endl;
     if ( _nJoys > MAX_JOYS)
       _nJoys = MAX_JOYS;
     for ( int i = 0; i < _nJoys; i++ )

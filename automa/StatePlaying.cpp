@@ -51,7 +51,7 @@ int StatePlaying::setupConnection(InputState *is) {
   char msg[100];
   string ports = "";
   int port;
-  sprintf(msg, "What port to listen on? [%d]", SERVER_PORT);
+  snprintf(msg, 100, "What port to listen on? [%d]", SERVER_PORT);
   cga->printRow(screen, 0, msg);
   SDL_Flip(screen);
   while ( (ch = getKeyPressed(is)) != SDLK_RETURN ) {
@@ -99,7 +99,7 @@ int StatePlaying::setupConnection(InputState *is) {
   do {
     remaining = nets->WaitClients(is, remaining);
     char msg[100];
-    sprintf(msg, "  %d connection(s) to go  ", remaining);
+    snprintf(msg,100, "  %d connection(s) to go  ", remaining);
     cga->printRow(screen, 5, msg, background);
     SDL_Flip(screen);  
   } while ( remaining > 0 );
@@ -135,53 +135,53 @@ int StatePlaying::execute(InputState *is, unsigned int ticks,
        probably create players here instead of in the constructor,
        and think of a clever way to destroy them once we're done.
     */
+    std::cout << "Creating teams" << std::endl;
 
     prevDrawn = ticks;
     tl = new Team(-1);
     tr = new Team(1);
     b = new Ball(BALL_ORIG);
 
-    for ( int i = 0, j = 0; i < configuration.left_nplayers; j++ ) {
-      if ( configuration.left_players[j] == PLAYER_NONE ) {
-	continue;
-      }
+    std::cout << "Left nplayers: " << configuration.left_nplayers << std::endl;
+    for ( int i = 0; i < configuration.left_nplayers; i++ ) {
 
-      string name = "Pippo-" + j;
-      if ( configuration.left_players[j] == PLAYER_HUMAN ) {
-	tl->addPlayerHuman(name.c_str(), PL_TYPE_MALE_LEFT);
-      } else {
-#ifndef NONET
-	if (!nets || !(nets->isRemote(j*2)))
-#endif
-	  tl->addPlayerAI(name.c_str(), PL_TYPE_MALE_LEFT, b);
-#ifndef NONET
-	else
-	  tl->addPlayerRemote(name.c_str(), PL_TYPE_MALE_LEFT);
-#endif
-      }
+            string name = std::string("Pippo-") + std::to_string(i);
 
-      i++;
+            if ( configuration.left_players[i] == PLAYER_HUMAN ) {
+                std::cout << i << " human" << std::endl;
+                tl->addPlayerHuman(name.c_str(), PL_TYPE_MALE_LEFT);
+            } 
+
+            if ( configuration.left_players[i] == PLAYER_COMPUTER ) {
+                std::cout << i << " AI" << std::endl;
+                tl->addPlayerAI(name.c_str(), PL_TYPE_MALE_LEFT, b);
+            } 
+
+            if ( configuration.left_players[i] == PLAYER_RL ) {
+                std::cout << i << " RL" << std::endl;
+                tl->addPlayerAI_RL(name.c_str(), PL_TYPE_MALE_LEFT, b);
+            } 
     }
 
-    for ( int i = 0, j = 0; i < configuration.right_nplayers; j++ ) {
-      if ( configuration.right_players[j] == PLAYER_NONE ) {
-	continue;
-      }
-      string name = "Pluto-" + j;
-      if ( configuration.right_players[j] == PLAYER_HUMAN ) {
-	tr->addPlayerHuman(name.c_str(), PL_TYPE_MALE_RIGHT);
-      } else {
-#ifndef NONET
-	if (!nets || !(nets->isRemote(j*2+1)))
-#endif
-	  tr->addPlayerAI(name.c_str(), PL_TYPE_MALE_RIGHT, b);
-#ifndef NONET
-	else
-	  tr->addPlayerRemote(name.c_str(), PL_TYPE_MALE_RIGHT);
-#endif
-      }
+    std::cout << "Right nplayers: " << configuration.right_nplayers << std::endl;
+    for ( int i = 0; i < configuration.right_nplayers; i++ ) {
 
-      i++;
+            string name = std::string("Pluto-") + std::to_string(i);
+
+            if ( configuration.right_players[i] == PLAYER_HUMAN ) {
+                std::cout << i << " human" << std::endl;
+                tr->addPlayerHuman(name.c_str(), PL_TYPE_MALE_RIGHT);
+            }
+
+            if ( configuration.right_players[i] == PLAYER_COMPUTER ) {
+                std::cout << i << " AI" << std::endl;
+                tr->addPlayerAI(name.c_str(), PL_TYPE_MALE_RIGHT, b);
+            } 
+
+            if ( configuration.right_players[i] == PLAYER_RL ) {
+                std::cout << i << " RL" << std::endl;
+                tr->addPlayerAI_RL(name.c_str(), PL_TYPE_MALE_RIGHT, b);
+            } 
     }
 
     tl->setScore(0);
@@ -208,10 +208,12 @@ int StatePlaying::execute(InputState *is, unsigned int ticks,
     return(STATE_MENU);
   }  
 
+
   tl->update(ticks - prevTicks, controlsArray);
   tr->update(ticks - prevTicks, controlsArray);
   
   b->update(ticks - prevTicks, tl, tr);
+
   
   if ( (ticks - prevDrawn) >
        (unsigned int) (FPS - (FPS / (configuration.frame_skip + 1)) ) ) {

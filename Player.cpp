@@ -106,6 +106,12 @@ void Player::updateClient(int ticks, pl_state_t st) {
 }
 
 void Player::update(int ticks, ControlsArray *ca) {
+
+  //const int side = (team())->side();  // -1: left,  1: right
+  //const float px = (side*(float)(x() - (team())->screen_w()/2)/(float)team()->screen_w() ) - (side<0?0.1f:0.0f);
+  //const float py = 1.0f - (float)y()/(float)(team()->screen_h());
+  //std::cout << "Player pos: " << px << std::endl;
+
   triple_t input = ca->getCommands(_plId);
   
   int dx = 0;

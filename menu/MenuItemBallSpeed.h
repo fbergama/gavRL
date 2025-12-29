@@ -30,8 +30,8 @@
 #define BALL_SPEED_ITEMS 3
 
 class MenuItemBallSpeed: public MenuItem {
-  char * _item[BALL_SPEED_ITEMS];
-  int _currItem;
+    std::string _item[BALL_SPEED_ITEMS];
+    int _currItem;
 
 public:
   MenuItemBallSpeed() {
@@ -42,9 +42,9 @@ public:
       _currItem = 1;
     else
       _currItem = 2;
-    _item[0] = "Normal";
-    _item[1] = "Fast";
-    _item[2] = "Too Fast!";
+    _item[0] = std::string("Normal");
+    _item[1] = std::string("Fast");
+    _item[2] = std::string("Too Fast!");
     setLabel();
   }
   
