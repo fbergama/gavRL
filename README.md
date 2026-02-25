@@ -9,6 +9,51 @@ Q-Learning. It uses
 [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/) as RL
 framework and includes a neural network visualization tool for live demos.
 
+# Building
+
+The game is based on SDL version 1. The easiest way to get it is to install SDL-compat (to SDL2 or 3)
+and [SDL-image version 1.2](https://github.com/libsdl-org/SDL_image/tree/SDL-1.2).
+
+Edit the file `CommonHeader` if necessary with the path with SDL libraries. Then, run `make`.
+
+### RL agent
+
+Enter the directory `RL` and run:
+
+```
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+For the neural network visualization based on the 
+[AzDelivery 4x64 led matrix](https://www.az-delivery.de/en/products/4-x-64er-led-matrix-display?variant=6015286214683), flash
+the Arduino firmware in `RL/arduino/azdel_4x64_ledmatrix`.
+
+# Running
+
+1. Activate the environment
+
+```
+cd RL/
+source .venv/bin/activate
+```
+
+2. Run the DQN service
+
+```
+python DQNservice_predict.py
+```
+
+3. run the game:
+
+```
+cd ..
+./gav
+```
+
+and select `AI RL` for `Player 2`
+
 # Author
 
 Filippo Bergamasco, Ca'Foscari University of Venice
